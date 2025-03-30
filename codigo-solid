@@ -1,0 +1,116 @@
+package solid;
+
+interface Persistible {
+    void guardarEnBaseDeDatos();
+}
+
+interface Reportable {
+    void generarReporte();
+}
+
+// PRINCIPIO 1: Single Responsibility 
+abstract class Empleado {
+    protected String nombre;
+    protected double salario;
+
+    public Empleado(String nombre, double salario) {
+        this.nombre = nombre;
+        this.salario = salario;
+    }
+
+    public abstract double calcularPago();
+}
+
+// PRINCIPIO 2: Open/Closed 
+class Gerente extends Empleado implements Persistible, Reportable {
+    public Gerente(String nombre, double salario) {
+        super(nombre, salario);
+    }
+
+    @Override
+    public double calcularPago() {
+        return salario + 1000;
+    }
+
+    @Override
+    public void guardarEnBaseDeDatos() {
+        System.out.println("Guardando gerente en la base de datos...");
+    }
+
+    @Override
+    public void generarReporte() {
+        System.out.println("Generando reporte del gerente...");
+    }
+}
+
+class Desarrollador extends Empleado implements Persistible {
+    public Desarrollador(String nombre, double salario) {
+        super(nombre, salario);
+    }
+
+    @Override
+    public double calcularPago() {
+        return salario;
+    }
+
+    @Override
+    public void guardarEnBaseDeDatos() {
+        System.out.println("Guardando desarrollador en la base de datos...");
+    }
+}
+
+class Practicante extends Empleado implements Persistible {
+    public Practicante(String nombre, double salario) {
+        super(nombre, salario);
+    }
+
+    @Override
+    public double calcularPago() {
+        return salario * 0.5;
+    }
+
+    @Override
+    public void guardarEnBaseDeDatos() {
+        System.out.println("Guardando practicante en la base de datos...");
+    }
+}
+
+class EmpleadoFreelance extends Empleado {
+    public EmpleadoFreelance(String nombre, double salario) {
+        super(nombre, salario);
+    }
+
+    @Override
+    public double calcularPago() {
+        return salario * 0.8; // Retención de impuestos
+    }
+}
+
+// PRINCIPIO 5: Dependency Inversion 
+class SistemaGestionEmpleados {
+    public void procesarEmpleado(Empleado empleado) {
+        double pago = empleado.calcularPago();
+        System.out.println("Pago calculado: " + pago);
+
+        if (empleado instanceof Persistible) {
+            ((Persistible) empleado).guardarEnBaseDeDatos();
+        }
+
+        if (empleado instanceof Reportable) {
+            ((Reportable) empleado).generarReporte();
+        }
+    }
+}
+
+public class SOLID {
+    public static void main(String[] args) {
+        Empleado gerente = new Gerente("Juan", 5000);
+        Empleado desarrollador = new Desarrollador("Ana", 3000);
+        Empleado practicante = new Practicante("Luis", 1000);
+
+        SistemaGestionEmpleados sistema = new SistemaGestionEmpleados();
+        sistema.procesarEmpleado(gerente);
+        sistema.procesarEmpleado(desarrollador);
+        sistema.procesarEmpleado(practicante);
+    }
+}
